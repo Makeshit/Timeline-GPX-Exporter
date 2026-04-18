@@ -2,8 +2,12 @@ import os
 import json
 import xml.etree.ElementTree as ET
 import xml.dom.minidom
-from datetime import datetime, timedelta
-from dateutil import parser
+try:
+    from datetime import datetime, timedelta
+    from dateutil import parser
+except ModuleNotFoundError:
+    print("Module not found. Please install the following modules: python-dateutil")
+    exit()
 
 def create_gpx_file(points, output_file):
     gpx = ET.Element("gpx", version="1.1", creator="https://github.com/Makeshit/Timeline-GPX-Exporter")
@@ -96,14 +100,13 @@ def main():
     if not os.path.exists(input_file):
         print(f"Input file 'Timeline.json' not found in {script_dir}, trying 'location-history.json'.")
         file = '2'
-    if not os.path.exists(input_file2):
-        print(f"Input file 'location-history.json' not found in {script_dir}. Exiting...")
-        file = '-1'
-        return
+        if not os.path.exists(input_file2):
+            print(f"Input file 'location-history.json' not found in {script_dir}. Exiting...")
+            return
 
     if file == '1':
         points_by_date = parse_json(input_file)
-    elif file == '2':
+    else:
         points_by_date = parse_json2(input_file2)
 
     for date, points in points_by_date.items():
